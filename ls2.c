@@ -8,7 +8,9 @@
 
 
 // TODO: function definitions here for ls2
-void ls2(char* path, int indent){
+//emp = exact pattern match
+void ls2(char* path, char* emp, int indent){
+    if(emp == NULL){//MODE 1
     DIR* currDir = opendir(path);
     if(currDir == NULL){//load dir and check it
         printf("This directory doesnt exist\n");
@@ -41,13 +43,17 @@ void ls2(char* path, int indent){
                     printf("%s",INDENT);
                 }
                 printf("%s (directory)\n", currPath->d_name);
-                ls2(pathName, indent + 1);//go into directory
+                ls2(pathName, NULL, indent + 1);//go into directory
                 free(pathName);
             }
         }
     }
     
     closedir(currDir);//close directory
+    }
+    else if(emp != NULL){// MODE 2
+
+    }
 
 }
 

@@ -21,6 +21,6 @@ int main(int argc, char* argv[]) {
 	// // free up stack
 	// freestack(s);
 	// return 0;
-	ls2(argv[1], 0);
+	ls2(argv[1], argv[2], 0);
 
 }
