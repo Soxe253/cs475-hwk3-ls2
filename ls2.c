@@ -17,35 +17,37 @@ void ls2(char* path, int indent){
     struct dirent *currPath;
     while((currPath = readdir(currDir)) != NULL){//
         if(strcmp(".", currPath->d_name) != 0 && strcmp("..", currPath->d_name) != 0){
-            struct stat statBuf;
+            struct stat statBuf;//statbuf for using lstat
             
-
             char *pathName = (char*)malloc((strlen(path) + strlen(currPath->d_name) + 2) * sizeof(char));//+2 for the null and /
             strcpy(pathName, path);
             strcat(pathName, "/");
-            strcat(pathName, currPath->d_name);
+            strcat(pathName, currPath->d_name);//putting pathname together
 
-            if(lstat(currPath->d_name, &statBuf) == -1){
+            if(lstat(pathName, &statBuf) == -1){
                 perror("lstat");
                 return;
             }
+    
             if(S_ISREG(statBuf.st_mode)){//its a file
-                //printf("its a file");
                 for(int i = 0; i < indent; i++){
                     printf("%s",INDENT);
                 }
                 printf("%s (%ld bytes)\n",currPath->d_name, statBuf.st_size);
+                free(pathName);
             }
-            else if(S_ISDIR(statBuf.st_mode)){
-                //printf("its a directory");
+            else if(S_ISDIR(statBuf.st_mode)){//its a directory
                 for(int i = 0; i < indent; i++){
                     printf("%s",INDENT);
                 }
                 printf("%s (directory)\n", currPath->d_name);
-                ls2(pathName, indent + 1);
+                ls2(pathName, indent + 1);//go into directory
+                free(pathName);
             }
         }
     }
+    
+    closedir(currDir);//close directory
 
 }
 
