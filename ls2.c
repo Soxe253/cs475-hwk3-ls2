@@ -87,19 +87,16 @@ bool mode2(stack_t *list, char* path, char* emp, int indent){
                 if(strcmp(currPath->d_name,emp) == 0){
                     char intStr[30];
                     snprintf(intStr, sizeof(intStr), " (%ld bytes)", statBuf.st_size);
-                    //printf("%s %s %s\n", currPath->d_name,INDENT,intStr);
                     char *currNameF = (char*)malloc((strlen(currPath->d_name) + (indent * strlen(INDENT)) + strlen(intStr) + 1) * sizeof(char));// 1 for null
                     currNameF[0] = '\0';
                     for(int i = 0; i < indent; i++){
                     strcat(currNameF, INDENT);
                     }
                     strcat(currNameF, currPath->d_name);
-                    //printf("%s\n", currNameF);
-                    //printf("%s\n", intStr);
+                   
                     strcat(currNameF, intStr);
                     push(list, currNameF);
-                    // printf("%s\n", currNameF);
-                    // printf("%ld\n", strlen(currNameF));
+                    
                     free(pathName);
                     closedir(currDir);
                     return TRUE;
