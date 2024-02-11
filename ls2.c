@@ -85,16 +85,15 @@ bool mode2(stack_t *list, char* path, char* emp, int indent){
             if(S_ISREG(statBuf.st_mode)){//its a file
                 if(strcmp(currPath->d_name,emp) == 0){
                     char intStr[30];
+                    snprintf(intStr, sizeof(intStr), " (%ld bytes)", statBuf.st_size);
                     //printf("%s %s %s\n", currPath->d_name,INDENT,intStr);
                     char *currNameF = (char*)malloc((strlen(currPath->d_name) + strlen(INDENT) + strlen(intStr) + 1) * sizeof(char));// 1 for null
+                    currNameF[0] = '\0';
                     for(int i = 0; i < indent; i++){
                     strcat(currNameF, INDENT);
                     }
                     strcat(currNameF, currPath->d_name);
                     //printf("%s\n", currNameF);
-                    if(snprintf(intStr, strlen(intStr), " (%ld bytes)", statBuf.st_size) > sizeof(intStr)){
-                        printf("overflow\n");
-                    }
                     //printf("%s\n", intStr);
                     strcat(currNameF, intStr);
                     push(list, currNameF);
@@ -109,6 +108,7 @@ bool mode2(stack_t *list, char* path, char* emp, int indent){
             else if(S_ISDIR(statBuf.st_mode)){//its a directory
             char *directory = " (directory)";
             char *currNameD = (char*)malloc((strlen(currPath->d_name) + strlen(INDENT) + strlen(directory) + 1) * sizeof(char));// 1 for null
+                currNameD[0] = '\0';
                 if(mode2(list, pathName, emp, indent+1)){
                     for(int i = 0; i < indent; i++){
                     strcat(currNameD, INDENT);
@@ -116,7 +116,9 @@ bool mode2(stack_t *list, char* path, char* emp, int indent){
                     strcat(currNameD, currPath->d_name);
                     strcat(currNameD, directory);
                     push(list, currNameD);
-
+                    free(pathName);
+                    closedir(currDir);
+                    return TRUE;
                 }
                 else{
                     free(currNameD);
