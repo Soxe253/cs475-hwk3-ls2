@@ -97,11 +97,8 @@ bool mode2(stack_t *list, char* path, char* emp, int indent){
                     strcat(currNameF, intStr);
                     push(list, currNameF);
                     
-                    free(pathName);
-                    closedir(currDir);
-                    return TRUE;
+                    foundFile = TRUE;
                 }
-                free(pathName);
             }
             
             else if(S_ISDIR(statBuf.st_mode)){//its a directory
@@ -109,6 +106,7 @@ bool mode2(stack_t *list, char* path, char* emp, int indent){
             char *currNameD = (char*)malloc((strlen(currPath->d_name) + (indent * strlen(INDENT)) + strlen(directory) + 1) * sizeof(char));// 1 for null
                 currNameD[0] = '\0';
                 foundFile = mode2(list, pathName, emp, indent+1);//was the file found down this path
+                bool childFound;
                 if(foundFile){
                     for(int i = 0; i < indent; i++){
                     strcat(currNameD, INDENT);
@@ -116,13 +114,16 @@ bool mode2(stack_t *list, char* path, char* emp, int indent){
                     strcat(currNameD, currPath->d_name);
                     strcat(currNameD, directory);
                     push(list, currNameD);
-                    
+                    childFound = TRUE;
                 }
                 else{
                     free(currNameD);
                 }
-                free(pathName);
+                if(childFound){
+                    foundFile = TRUE;
+                }
             }
+            free(pathName);
         }
     }
     closedir(currDir);
