@@ -68,6 +68,7 @@ bool mode2(stack_t *list, char* path, char* emp, int indent){
         return FALSE;
     }
     struct dirent *currPath;
+    bool foundFile = FALSE;
     while((currPath = readdir(currDir)) != NULL){
         if(strcmp(".", currPath->d_name) != 0 && strcmp("..", currPath->d_name) != 0){
             struct stat statBuf;//statbuf for using lstat
@@ -87,7 +88,7 @@ bool mode2(stack_t *list, char* path, char* emp, int indent){
                     char intStr[30];
                     snprintf(intStr, sizeof(intStr), " (%ld bytes)", statBuf.st_size);
                     //printf("%s %s %s\n", currPath->d_name,INDENT,intStr);
-                    char *currNameF = (char*)malloc((strlen(currPath->d_name) + strlen(INDENT) + strlen(intStr) + 1) * sizeof(char));// 1 for null
+                    char *currNameF = (char*)malloc((strlen(currPath->d_name) + (indent * strlen(INDENT)) + strlen(intStr) + 1) * sizeof(char));// 1 for null
                     currNameF[0] = '\0';
                     for(int i = 0; i < indent; i++){
                     strcat(currNameF, INDENT);
@@ -105,20 +106,20 @@ bool mode2(stack_t *list, char* path, char* emp, int indent){
                 }
                 free(pathName);
             }
+            
             else if(S_ISDIR(statBuf.st_mode)){//its a directory
             char *directory = " (directory)";
-            char *currNameD = (char*)malloc((strlen(currPath->d_name) + strlen(INDENT) + strlen(directory) + 1) * sizeof(char));// 1 for null
+            char *currNameD = (char*)malloc((strlen(currPath->d_name) + (indent * strlen(INDENT)) + strlen(directory) + 1) * sizeof(char));// 1 for null
                 currNameD[0] = '\0';
-                if(mode2(list, pathName, emp, indent+1)){
+                foundFile = mode2(list, pathName, emp, indent+1);//was the file found down this path
+                if(foundFile){
                     for(int i = 0; i < indent; i++){
                     strcat(currNameD, INDENT);
                     }
                     strcat(currNameD, currPath->d_name);
                     strcat(currNameD, directory);
                     push(list, currNameD);
-                    free(pathName);
-                    closedir(currDir);
-                    return TRUE;
+                    
                 }
                 else{
                     free(currNameD);
@@ -128,7 +129,7 @@ bool mode2(stack_t *list, char* path, char* emp, int indent){
         }
     }
     closedir(currDir);
-    return FALSE;
+    return foundFile;
 }
 
 
